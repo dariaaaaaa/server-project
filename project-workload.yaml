@@ -1,0 +1,51 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: server-project
+  labels:
+    name: server-project
+spec:
+  ports:
+    - nodePort: 30002
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: server-project
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-project
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server-project
+  template:
+    metadata:
+      name: server-project
+      labels:
+        app: server-project
+    spec:
+      containers:
+        - name: server-project
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-project-config
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-project-config
+                  key: postgres_password
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-project-config
+                  key: postgres_host
+          image: dariadenhub/server-project:latest
