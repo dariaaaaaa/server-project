@@ -59,7 +59,10 @@ public class ProjectService {
         if (description != null && !description.isBlank()) project.setDescription(description);
         if (dateStart != null) project.setDateStart(dateStart);
         if (dateEnd != null) project.setDateEnd(dateEnd);
-        if (ownerId != 0) project.setOwnerId(ownerId);
+        if (ownerId != 0) {
+            UserRequests.checkForExisting(ownerId);
+            project.setOwnerId(ownerId);
+        }
         projectRepo.save(project);
     }
 
